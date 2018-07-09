@@ -1,0 +1,47 @@
+web:
+  build: .c42/docker/cake
+  ports:
+    - 80
+  links:
+    - db
+  volumes:
+    - .:/var/www
+    - .c42/docker/phpadditional.ini:/usr/local/etc/php/conf.d/phpadditional.ini
+  environment:
+    VIRTUAL_HOST: demo-formation.test
+
+db:
+  image: mysql:5.6
+  environment:
+    MYSQL_ROOT_PASSWORD: "root"
+    MYSQL_DATABASE: demo
+
+phpmyadmin:
+  image: phpmyadmin/phpmyadmin
+  links:
+    - db
+  ports:
+    - 80
+  environment:
+    VIRTUAL_HOST: pma.demo-formation.test
+
+mail:
+  image: occitech/alpine-mailhog
+  ports:
+    - 8025
+  environment:
+    VIRTUAL_HOST: mail.demo-formation.test
+    VIRTUAL_PORT: 8025
+
+composer:
+  build: .c42/docker/composer
+  links:
+    - db
+  volumes:
+    - $HOME/.composer:/composer
+    - .c42/docker/php_additional.ini:/usr/local/etc/php/conf.d/php_additional.ini
+    - .:/var/www
+    - $SSH_AUTH_SOCK:/ssh-agent
+  environment:
+    - SSH_AUTH_SOCK=/ssh-agent
+  working_dir: /var/www
