@@ -3,3 +3,5 @@
 ## Install
 
 Clone the repo
+
+## Configuration
